@@ -18,6 +18,9 @@ export default function SettingsPage() {
   const [employees, setEmployees] = useState<any[]>([]);
   const [hpSettings, setHpSettings] = useState<any>({});
   
+  const [redeemInput, setRedeemInput] = useState('');
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  
   // Form Profil & Struk
   const [formData, setFormData] = useState({
     name: '',
@@ -79,6 +82,73 @@ export default function SettingsPage() {
     setLoading(false);
   };
 
+  const handleRedeem = async () => {
+    if (!redeemInput) return;
+    setIsRedeeming(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not logged in');
+
+      // Check code
+      const { data: codeData, error: fetchErr } = await supabase
+        .from('redeem_codes')
+        .select('*')
+        .eq('code', redeemInput)
+        .single();
+        
+      if (fetchErr || !codeData) {
+        alert('Kode tidak valid atau tidak ditemukan!');
+        setIsRedeeming(false);
+        return;
+      }
+      
+      if (codeData.is_used) {
+        alert('Kode ini sudah digunakan!');
+        setIsRedeeming(false);
+        return;
+      }
+
+      // Claim code
+      const { error: claimErr } = await supabase
+        .from('redeem_codes')
+        .update({ 
+          is_used: true, 
+          used_by: session.user.id, 
+          used_at: new Date().toISOString() 
+        })
+        .eq('code', redeemInput);
+
+      if (claimErr) throw claimErr;
+
+      // Update merchant_settings
+      const newExp = codeData.duration_days 
+        ? Date.now() + (codeData.duration_days * 24 * 60 * 60 * 1000) 
+        : null;
+
+      const updatedSettings = {
+        ...hpSettings,
+        isPro: true,
+        proType: codeData.tier === 'enterprise' ? 'permanent' : codeData.tier,
+        trialExpiresAt: newExp
+      };
+
+      await supabase.from('merchant_settings').upsert({
+        merchant_id: session.user.id,
+        settings: updatedSettings
+      }, { onConflict: 'merchant_id' });
+
+      setHpSettings(updatedSettings);
+      setRedeemInput('');
+      alert(`Berhasil! Lisensi ${codeData.tier.toUpperCase()} telah diaktifkan.`);
+      
+    } catch (e: any) {
+      alert('Terjadi kesalahan: ' + e.message);
+    }
+    
+    setIsRedeeming(false);
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -133,6 +203,20 @@ export default function SettingsPage() {
     
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
+
+    // QUOTA CHECK
+    if (!editingEmp) {
+      const isPro = hpSettings?.isPro;
+      const proType = hpSettings?.proType || 'basic';
+      
+      const maxEmployees = proType === 'basic' ? 1 : (proType === 'pro' || proType === 'trial' ? 5 : 9999);
+      
+      if (employees.length >= maxEmployees) {
+        alert(`Batas maksimal karyawan tercapai! Paket ${proType.toUpperCase()} mengizinkan maksimal ${maxEmployees} karyawan. Silakan upgrade ke paket lebih tinggi.`);
+        setIsSubmittingEmp(false);
+        return;
+      }
+    }
 
     const payload = {
       merchant_id: session.user.id,
@@ -413,6 +497,19 @@ export default function SettingsPage() {
                           </p>
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Form Redeem Code */}
+                  <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 className="font-bold text-slate-800 mb-2">Punya Kode Aktivasi?</h3>
+                    <p className="text-sm text-slate-500 mb-4">Masukkan kode unik (Redeem Code) untuk membuka fitur premium.</p>
+                    
+                    <div className="flex gap-2">
+                      <input type="text" value={redeemInput} onChange={(e) => setRedeemInput(e.target.value.toUpperCase())} placeholder="PRO-XXXX-XXXX" className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-sm tracking-widest focus:bg-white focus:outline-none focus:border-indigo-500" />
+                      <button onClick={handleRedeem} disabled={isRedeeming || !redeemInput} className="px-6 py-3 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 disabled:opacity-50 flex items-center gap-2">
+                        {isRedeeming ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Aktifkan'}
+                      </button>
                     </div>
                   </div>
                 </div>

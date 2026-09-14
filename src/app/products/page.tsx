@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -96,6 +96,22 @@ export default function ProductsPage() {
     
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
+
+    // QUOTA CHECK
+    if (!editingId) {
+      const { data: mSetting } = await supabase.from('merchant_settings').select('settings').eq('merchant_id', session.user.id).single();
+      const s = mSetting?.settings || {};
+      const isPro = s.isPro;
+      const proType = s.proType || 'basic';
+      
+      const maxProducts = proType === 'basic' ? 50 : 999999;
+      
+      if (products.length >= maxProducts) {
+        alert(`Batas maksimal produk tercapai! Paket Basic hanya mengizinkan maksimal 50 produk. Silakan masuk ke Pengaturan -> Lisensi untuk upgrade.`);
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     const payload = {
       merchant_id: session.user.id,
