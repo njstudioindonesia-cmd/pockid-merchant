@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,7 @@ export default function SettingsPage() {
   const [isEmpModalOpen, setIsEmpModalOpen] = useState(false);
   const [isSubmittingEmp, setIsSubmittingEmp] = useState(false);
   const [editingEmpId, setEditingEmpId] = useState<string | null>(null);
-  const [empForm, setEmpForm] = useState({ name: '', phone: '', salary: '0', address: '' });
+  const [empForm, setEmpForm] = useState({ name: '', phone: '', salary: '0', address: '', role: 'cashier', pin: '' });
 
   const router = useRouter();
 
@@ -112,10 +112,17 @@ export default function SettingsPage() {
   const openEmpModal = (emp: any = null) => {
     if (emp) {
       setEditingEmpId(emp.id);
-      setEmpForm({ name: emp.name, phone: emp.phone || '', salary: emp.salary?.toString() || '0', address: emp.address || '' });
+      setEmpForm({ 
+        name: emp.name, 
+        phone: emp.phone || '', 
+        salary: emp.salary?.toString() || '0', 
+        address: emp.address || '',
+        role: emp.role || 'cashier',
+        pin: emp.pin || ''
+      });
     } else {
       setEditingEmpId(null);
-      setEmpForm({ name: '', phone: '', salary: '0', address: '' });
+      setEmpForm({ name: '', phone: '', salary: '0', address: '', role: 'cashier', pin: '' });
     }
     setIsEmpModalOpen(true);
   };
@@ -132,7 +139,9 @@ export default function SettingsPage() {
       name: empForm.name,
       phone: empForm.phone,
       salary: Number(empForm.salary),
-      address: empForm.address
+      address: empForm.address,
+      role: empForm.role,
+      pin: empForm.pin
     };
 
     if (editingEmpId) {
@@ -333,6 +342,20 @@ export default function SettingsPage() {
               <div>
                 <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Nama Lengkap *</label>
                 <input type="text" required value={empForm.name} onChange={e => setEmpForm({...empForm, name: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:border-indigo-500" placeholder="Misal: Rian" />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Peran (Role)</label>
+                  <select value={empForm.role} onChange={e => setEmpForm({...empForm, role: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:border-indigo-500">
+                    <option value="cashier">Kasir (Akses Terbatas)</option>
+                    <option value="admin">Admin (Akses Penuh)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">PIN Akses (4 Angka)</label>
+                  <input type="text" maxLength={4} required value={empForm.pin} onChange={e => setEmpForm({...empForm, pin: e.target.value.replace(/[^0-9]/g, '')})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold tracking-widest focus:bg-white focus:outline-none focus:border-indigo-500" placeholder="1234" />
+                </div>
               </div>
               
               <div>
