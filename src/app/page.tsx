@@ -17,7 +17,6 @@ import {
   MapPin
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useRouter } from 'next/navigation';
 
 export default function MerchantDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
