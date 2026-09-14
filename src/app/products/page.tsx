@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -153,7 +153,7 @@ export default function ProductsPage() {
                   <td colSpan={6} className="py-16 text-center text-slate-400">
                     <Package className="w-16 h-16 text-slate-200 mx-auto mb-4" />
                     <p className="text-lg font-bold text-slate-600">Gudang Kosong</p>
-                    <p className="text-sm">Klik tombol "Produk Baru" untuk mulai menambahkan barang.</p>
+                    <p className="text-sm">Klik tombol &quot;Produk Baru&quot; untuk mulai menambahkan barang.</p>
                   </td>
                 </tr>
               ) : (
