@@ -114,9 +114,12 @@ export default function MerchantDashboard() {
           <Link href="/customers" className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-800/50 hover:text-white">
             <Users className="w-5 h-5" /> Pelanggan & CRM
           </Link>
-          <button className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-800/50 hover:text-white">
+          <Link href="/reports" className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-800/50 hover:text-white">
+            <TrendingUp className="w-5 h-5" /> Laporan Penjualan
+          </Link>
+          <Link href="/settings" className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-800/50 hover:text-white">
             <Settings className="w-5 h-5" /> Pengaturan Toko
-          </button>
+          </Link>
         </nav>
 
         <div className="p-6 relative z-10">
