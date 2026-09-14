@@ -186,7 +186,7 @@ export default function SettingsPage() {
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">Manajemen Sistem & Pengaturan</h1>
             <p className="text-slate-500 text-sm font-medium">Kendali penuh atas seluruh operasional cabang dan aplikasi kasir Anda.</p>
           </div>
-          {(activeTab === 'profil' || activeTab === 'struk') && (
+          {(activeTab !== 'karyawan' && activeTab !== 'lisensi') && (
             <button onClick={handleSave} disabled={isSaving} className="ml-auto px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl flex items-center gap-2 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 active:scale-95 transition-all">
               {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5" /> Simpan Perubahan</>}
             </button>
@@ -308,19 +308,113 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* ... (Pembayaran, Online, Keamanan, Lisensi placeholders) */}
-              {['pembayaran', 'online', 'keamanan', 'lisensi'].includes(activeTab) && (
-                <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center animate-in fade-in duration-300">
-                  <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100 shadow-inner">
-                    {activeTab === 'pembayaran' && <CreditCard className="w-10 h-10 text-slate-400" />}
-                    {activeTab === 'online' && <ShoppingBag className="w-10 h-10 text-slate-400" />}
-                    {activeTab === 'keamanan' && <ShieldCheck className="w-10 h-10 text-slate-400" />}
-                    {activeTab === 'lisensi' && <Crown className="w-10 h-10 text-amber-400" />}
+              {activeTab === 'pembayaran' && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="border-b border-slate-100 pb-4 mb-6">
+                    <h2 className="text-xl font-bold text-slate-800">Metode Pembayaran & QRIS</h2>
+                    <p className="text-sm text-slate-500 font-medium">Atur cara pelanggan membayar di kasir Anda.</p>
                   </div>
-                  <h3 className="text-xl font-black text-slate-800 mb-2">Modul {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h3>
-                  <p className="text-sm text-slate-500 font-medium max-w-sm mb-6">
-                    Fitur ini sedang dalam pengembangan ERP tahap selanjutnya.
-                  </p>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Gambar Barcode QRIS (Base64)</label>
+                      <textarea rows={4} value={hpSettings?.qrisImage || ''} onChange={e => setHpSettings({...hpSettings, qrisImage: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:border-indigo-500" placeholder="Paste data:image/png;base64,... di sini" />
+                      <p className="text-xs text-slate-500 mt-2">Gambar QRIS ini akan muncul di layar struk digital HP Kasir untuk di-scan pelanggan.</p>
+                    </div>
+                    
+                    {hpSettings?.qrisImage && hpSettings.qrisImage.startsWith('data:image') && (
+                      <div className="p-4 bg-white border border-slate-200 rounded-xl max-w-[200px]">
+                        <img src={hpSettings.qrisImage} alt="QRIS" className="w-full h-auto rounded-lg" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'online' && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="border-b border-slate-100 pb-4 mb-6">
+                    <h2 className="text-xl font-bold text-slate-800">Toko Online & Katalog</h2>
+                    <p className="text-sm text-slate-500 font-medium">Atur visibilitas toko Anda di internet.</p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-800">Aktifkan Katalog Digital</h4>
+                        <p className="text-xs text-slate-500 font-medium">Pelanggan dapat melihat menu/produk Anda via link browser.</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" checked={hpSettings?.isStorePublished || false} onChange={e => setHpSettings({...hpSettings, isStorePublished: e.target.checked})} />
+                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Model Bisnis (UI Kasir)</label>
+                      <select value={hpSettings?.businessMode || 'retail'} onChange={e => setHpSettings({...hpSettings, businessMode: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:border-indigo-500">
+                        <option value="retail">Retail / Minimarket (Scan Barcode & Grid)</option>
+                        <option value="fnb">F&B / Restoran (Meja & Pesanan Dapur)</option>
+                        <option value="services">Jasa / Salon (Booking Waktu)</option>
+                      </select>
+                      <p className="text-xs text-slate-500 mt-2">Mengubah ini akan merombak total tampilan UI di Aplikasi HP Kasir secara otomatis (membutuhkan restart aplikasi HP).</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'keamanan' && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="border-b border-slate-100 pb-4 mb-6">
+                    <h2 className="text-xl font-bold text-slate-800">Keamanan & Kontrol Akses</h2>
+                    <p className="text-sm text-slate-500 font-medium">Lindungi data penjualan dan cegah manipulasi kasir.</p>
+                  </div>
+                  
+                  <div className="space-y-6 max-w-sm">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">PIN Master Admin (HP Kasir)</label>
+                      <input type="password" maxLength={6} value={hpSettings?.adminPin || ''} onChange={e => setHpSettings({...hpSettings, adminPin: e.target.value.replace(/[^0-9]/g, '')})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold tracking-widest focus:bg-white focus:outline-none focus:border-indigo-500" placeholder="1234" />
+                      <p className="text-xs text-slate-500 mt-2">PIN ini diperlukan di HP Kasir untuk masuk ke mode Admin, menghapus transaksi, atau mereset data.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'lisensi' && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="border-b border-slate-100 pb-4 mb-6">
+                    <h2 className="text-xl font-bold text-slate-800">Status Lisensi PRO</h2>
+                    <p className="text-sm text-slate-500 font-medium">Informasi paket berlangganan SuperWeb & App Anda.</p>
+                  </div>
+                  
+                  <div className="p-6 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-2xl shadow-xl shadow-indigo-900/20 text-white relative overflow-hidden">
+                    <div className="absolute -right-10 -top-10 opacity-10">
+                      <Crown className="w-48 h-48" />
+                    </div>
+                    <div className="relative z-10">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-400/20 text-amber-300 rounded-full text-xs font-bold mb-4 border border-amber-400/30">
+                        <Crown className="w-3 h-3" />
+                        {hpSettings?.proType === 'trial' ? 'TRIAL AKTIF' : hpSettings?.isPro ? 'PRO AKTIF' : 'BASIC PLAN'}
+                      </div>
+                      <h3 className="text-2xl font-black mb-1">PockidPOS Enterprise</h3>
+                      <p className="text-indigo-200 text-sm mb-6 max-w-md">Nikmati sinkronisasi 2 arah tanpa batas, manajemen ERP lengkap, dan dukungan prioritas 24/7.</p>
+                      
+                      <div className="grid grid-cols-2 gap-4 pt-6 border-t border-indigo-500/30">
+                        <div>
+                          <p className="text-xs text-indigo-300 font-bold mb-1">STATUS AKUN</p>
+                          <p className="font-medium text-white">{hpSettings?.isPro ? 'Premium' : 'Gratis'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-indigo-300 font-bold mb-1">MASA BERLAKU</p>
+                          <p className="font-medium text-white">
+                            {hpSettings?.proType === 'trial' && hpSettings?.trialExpiresAt 
+                              ? new Date(hpSettings.trialExpiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) 
+                              : 'Selamanya (Permanent)'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
