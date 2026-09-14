@@ -205,7 +205,7 @@ export default function SettingsPage() {
     if (!session) return;
 
     // QUOTA CHECK
-    if (!editingEmp) {
+    if (!editingEmpId) {
       const isPro = hpSettings?.isPro;
       const proType = hpSettings?.proType || 'basic';
       
