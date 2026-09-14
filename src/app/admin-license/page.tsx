@@ -14,11 +14,11 @@ export default function AdminLicensePage() {
   const [campaign, setCampaign] = useState('PROMO_AWAL');
   
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedCodes, setGeneratedCodes] = useState([]);
+  const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
   
   const router = useRouter();
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === 'POCKID2026') {
       setIsAuthenticated(true);
@@ -36,7 +36,7 @@ export default function AdminLicensePage() {
     return `${tier.toUpperCase().substring(0,3)}-${code.substring(0,4)}-${code.substring(4)}`;
   };
 
-  const handleGenerate = async (e) => {
+  const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsGenerating(true);
     
