@@ -478,9 +478,16 @@ export default function SettingsPage() {
                     <div className="relative z-10">
                       <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-400/20 text-amber-300 rounded-full text-xs font-bold mb-4 border border-amber-400/30">
                         <Crown className="w-3 h-3" />
-                        {hpSettings?.proType === 'trial' ? 'TRIAL AKTIF' : hpSettings?.isPro ? 'PRO AKTIF' : 'BASIC PLAN'}
+                        {(() => {
+                          const isTrial = hpSettings?.trialExpiresAt && hpSettings.trialExpiresAt > Date.now();
+                          if (hpSettings?.proType === 'enterprise') return isTrial ? 'ENTERPRISE (TRIAL)' : 'ENTERPRISE PLAN';
+                          if (hpSettings?.isPro || hpSettings?.proType === 'pro') return isTrial ? 'PRO (TRIAL)' : 'PRO PLAN';
+                          return 'BASIC PLAN';
+                        })()}
                       </div>
-                      <h3 className="text-2xl font-black mb-1">PockidPOS Enterprise</h3>
+                      <h3 className="text-2xl font-black mb-1">
+                        {hpSettings?.proType === 'enterprise' ? 'PockidPOS Enterprise' : hpSettings?.isPro ? 'PockidPOS Pro' : 'PockidPOS Basic'}
+                      </h3>
                       <p className="text-indigo-200 text-sm mb-6 max-w-md">Nikmati sinkronisasi 2 arah tanpa batas, manajemen ERP lengkap, dan dukungan prioritas 24/7.</p>
                       
                       <div className="grid grid-cols-2 gap-4 pt-6 border-t border-indigo-500/30">
@@ -491,7 +498,7 @@ export default function SettingsPage() {
                         <div>
                           <p className="text-xs text-indigo-300 font-bold mb-1">MASA BERLAKU</p>
                           <p className="font-medium text-white">
-                            {hpSettings?.proType === 'trial' && hpSettings?.trialExpiresAt 
+                            {hpSettings?.trialExpiresAt 
                               ? new Date(hpSettings.trialExpiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) 
                               : 'Selamanya (Permanent)'}
                           </p>
