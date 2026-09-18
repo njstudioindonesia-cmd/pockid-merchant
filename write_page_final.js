@@ -1,4 +1,6 @@
-'use client';
+const fs = require('fs');
+
+const base64Code = \'use client';
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -258,12 +260,12 @@ export default function MerchantDashboard() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 500}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 500}} tickFormatter={(val) => `Rp${val/1000}k`} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 500}} tickFormatter={(val) => \Rp\k\} />
                     <Tooltip 
                       contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}
                       itemStyle={{ color: '#4F46E5', fontWeight: 'bold' }}
                       labelStyle={{ color: '#64748B', fontWeight: 'bold', marginBottom: '4px' }}
-                      formatter={(value: any) => [`Rp ${value.toLocaleString('id-ID')}`, 'Pendapatan']}
+                      formatter={(value: any) => [\Rp \\, 'Pendapatan']}
                     />
                     <Area type="monotone" dataKey="sales" stroke="#6366F1" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
                   </AreaChart>
@@ -292,7 +294,7 @@ export default function MerchantDashboard() {
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-800">{trx.order_type === 'dine-in' ? 'Dine In' : 'Takeaway'}</p>
-                          <p className="text-[11px] font-medium text-slate-500">{new Date(trx.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})} â€¢ {trx.payment_method}</p>
+                          <p className="text-[11px] font-medium text-slate-500">{new Date(trx.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})} • {trx.payment_method}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -311,3 +313,6 @@ export default function MerchantDashboard() {
     </div>
   );
 }
+\;
+
+fs.writeFileSync('src/app/page.tsx', base64Code, 'utf8');
