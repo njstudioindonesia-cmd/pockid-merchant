@@ -31,6 +31,9 @@ export default function MerchantDashboard() {
   const [totalTrx, setTotalTrx] = useState(0);
   const [salesData, setSalesData] = useState<any[]>([]);
   const [storeProfile, setStoreProfile] = useState<any>(null);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<string>('all');
+  const [allTransactions, setAllTransactions] = useState<any[]>([]);
   
   const router = useRouter();
 
