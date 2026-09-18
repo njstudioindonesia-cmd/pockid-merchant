@@ -155,7 +155,7 @@ export default function MerchantDashboard() {
               <Search className="w-4 h-4 text-slate-400 mr-2" />
               <input type="text" placeholder="Cari transaksi..." className="bg-transparent border-none outline-none text-sm w-48 text-slate-700 placeholder:text-slate-400" />
             </div>
-            {branches.length > 0 && (
+            
               <select 
                 value={selectedBranch} 
                 onChange={e => setSelectedBranch(e.target.value)}
@@ -166,7 +166,6 @@ export default function MerchantDashboard() {
                   <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
               </select>
-            )}
             <button className="relative p-2 text-slate-400 hover:text-indigo-600 transition-colors">
               <Bell className="w-6 h-6" />
               <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
